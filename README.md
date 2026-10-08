@@ -4,7 +4,6 @@
 
 Monomesh is a high-performance, serverless web application that leverages state-of-the-art AI to instantly transform any 2D photograph into a clean, volumetric 3D mesh. Built with cost-efficiency and user experience in mind, the platform allows creators, designers, and developers to generate 3D assets ready for CAD or 3D printing without expensive software or technical expertise.
 
-![Monomesh Demo](frontend/public/demos/demo1.png)
 
 ## ✨ Key Features
 * **Single-Image Reconstruction:** Drop in any standard JPG or PNG, and the AI will hallucinate the unseen geometry to construct a fully watertight 3D model.
