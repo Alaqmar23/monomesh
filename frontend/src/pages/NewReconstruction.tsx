@@ -74,8 +74,8 @@ export const NewReconstruction: React.FC = () => {
   }, [jobId, jobStatus?.status]);
 
   const handleProceedToAnalysis = async () => {
-    if (selectedFiles.length < 2) {
-      setErrorMsg("Please select at least 2 viewpoints (maximum 5) to proceed.");
+    if (selectedFiles.length !== 1) {
+      setErrorMsg("Please select exactly 1 image to proceed.");
       return;
     }
     setErrorMsg(null);
@@ -211,12 +211,12 @@ export const NewReconstruction: React.FC = () => {
           </section>
 
           <section>
-            <h2 className="text-xl font-serif text-white mb-2">Source views</h2>
-            <p className="text-sm text-slate-400 mb-6">Provide 2 to 5 photographs taken from distinct angles.</p>
+            <h2 className="text-xl font-serif text-white mb-2">Source view</h2>
+            <p className="text-sm text-slate-400 mb-6">Provide 1 photograph to generate a 3D model.</p>
             
             <ImageDropzone
               onFilesSelected={setSelectedFiles}
-              maxFiles={5}
+              maxFiles={1}
             />
 
             <div className="mt-8 flex justify-between items-center border-t border-surface-border pt-6">
@@ -225,7 +225,7 @@ export const NewReconstruction: React.FC = () => {
               </div>
               <button
                 onClick={handleProceedToAnalysis}
-                disabled={selectedFiles.length < 2 || isCreatingProject}
+                disabled={selectedFiles.length !== 1 || isCreatingProject}
                 className="px-6 py-2 text-sm text-black bg-white hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:bg-slate-700 disabled:text-slate-400"
               >
                 {isCreatingProject ? 'Staging...' : 'Proceed'}

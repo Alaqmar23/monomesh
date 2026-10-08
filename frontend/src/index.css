@@ -2,64 +2,251 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --bg: #1a1210;
+  --surface: #231815;
+  --surface-raised: #2a1d1a;
+  --fg: #fff8f1;
+  --muted: #a89289;
+  --ac: #f0604f;
+  --border: #352521;
+  --border-hover: #4d3731;
+  --line: #fff8f1;
+}
+
 @layer base {
   body {
-    background-color: #08090d;
-    color: #e2e8f0;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: #1a1210;
+    color: #fff8f1;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-serif {
+    font-family: 'Fraunces', Georgia, serif;
+    letter-spacing: -0.02em;
   }
 }
 
-/* Custom sleek scrollbar */
+/* Scroll-triggered pop-up animation - GPU accelerated */
+.reveal-init {
+  opacity: 0;
+  transform: translate3d(0, 40px, 0);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.reveal-delay-1 {
+  transition-delay: 80ms;
+}
+
+.reveal-delay-2 {
+  transition-delay: 160ms;
+}
+
+.reveal-delay-3 {
+  transition-delay: 240ms;
+}
+
+.reveal-delay-4 {
+  transition-delay: 320ms;
+}
+
+/* Architectural dark warm stone scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #090a0f;
+  background: #211b18;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e2433;
-  border-radius: 9999px;
+  background: #453a34;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2d374d;
+  background: #5c4e46;
 }
 
-/* High-tech grid background */
-.bg-grid-pattern {
+/* Monomesh Logo styles - tight, unified wordmark */
+.word {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.word b {
+  font-weight: 600;
+  color: var(--ac);
+}
+
+.gy {
+  display: inline-block;
+  width: 0.64em;
+  height: 0.64em;
+  vertical-align: -0.06em;
+  margin: 0 0.02em;
+  overflow: visible;
+}
+
+/* Tactile Physical Button Utilities */
+.btn-coral {
+  background-color: var(--ac);
+  color: #fff8f1;
+  border: 1px solid #d94d3d;
+  border-radius: 6px;
+  box-shadow: 0 2px 0 #b5382a;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  font-weight: 500;
+}
+
+.btn-coral:hover {
+  background-color: #ff6b57;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 #b5382a;
+}
+
+.btn-coral:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #b5382a;
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  font-weight: 500;
+}
+
+.btn-outline:hover {
+  background-color: var(--surface);
+  border-color: var(--border-hover);
+}
+
+.btn-outline:active {
+  background-color: var(--surface-raised);
+}
+
+/* Simple 1-level flat panel container */
+.flat-panel {
+  border-radius: 8px;
+}
+
+/* Fine grid background texture */
+.bg-grid-subtle {
   background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right, rgba(255, 248, 241, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 248, 241, 0.03) 1px, transparent 1px);
 }
 
-/* Glassmorphism panels */
-.glass-panel {
-  background: rgba(15, 17, 26, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* ==========================================================================
+   MOBILE & TABLET RESPONSIVENESS OVERRIDES
+   These rules strictly apply to screens 1024px and smaller to preserve
+   the desktop layout pixel-for-pixel.
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  /* Reduce excessive vertical padding on sections */
+  section.py-24, section.sm\:py-32, section.md\:py-32 {
+    padding-top: 5rem !important;
+    padding-bottom: 5rem !important;
+  }
 }
 
-.glass-panel-hover {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+@media (max-width: 767px) {
+  /* Hero Typography */
+  h1.text-5xl, h1.sm\:text-6xl {
+    font-size: 2.75rem !important;
+    line-height: 1.05 !important;
+  }
+  p.text-base.sm\:text-lg {
+    font-size: 1rem !important;
+  }
+
+  /* Header adjustments for very narrow screens */
+  header .btn-coral {
+    display: none !important;
+  }
+
+  /* 3D Demo Container - Make it taller for mobile usability */
+  .aspect-\[21\/9\] {
+    aspect-ratio: 3/4 !important;
+  }
+
+  /* 3D Demo UI Elements - Scale down and reposition to avoid overlaps */
+  .showcase-thumb-wrapper {
+    top: 12px !important;
+    left: 12px !important;
+  }
+  .showcase-thumb-wrapper img {
+    width: 80px !important;
+    height: 80px !important;
+    background-color: #e6dac3 !important;
+    filter: invert(0) !important;
+    border-radius: 4px !important;
+    padding: 4px !important;
+  }
+  
+  .confidence-legend-wrapper {
+    transform: scale(0.7) !important;
+    transform-origin: top right !important;
+    top: 12px !important;
+    right: 12px !important;
+  }
+
+  .mesh-label-left {
+    transform: scale(0.8) !important;
+    transform-origin: bottom left !important;
+    bottom: 12px !important;
+    left: 12px !important;
+  }
+
+  .mesh-label-right {
+    transform: scale(0.8) !important;
+    transform-origin: bottom right !important;
+    bottom: 12px !important;
+    right: 12px !important;
+  }
+
+  /* Slider thumb scale */
+  .cursor-ew-resize {
+    width: 24px !important;
+    height: 24px !important;
+    margin-left: -12px !important;
+    margin-top: -12px !important;
+  }
 }
 
-.glass-panel-hover:hover {
-  background: rgba(21, 24, 36, 0.85);
-  border-color: rgba(48, 119, 255, 0.3);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-}
-
-/* Glow effects */
-.glow-text-cyan {
-  text-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
-}
-
-.glow-text-brand {
-  text-shadow: 0 0 20px rgba(48, 119, 255, 0.5);
+@media (max-width: 375px) {
+  /* Further reduce for tiny screens (iPhone SE) */
+  .confidence-legend-wrapper {
+    transform: scale(0.6) !important;
+  }
+  .showcase-thumb-wrapper img {
+    width: 64px !important;
+    height: 64px !important;
+  }
 }

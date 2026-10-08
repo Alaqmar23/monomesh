@@ -7,6 +7,7 @@ export interface StartReconstructionParams {
   quality?: string;
   output_format?: string;
   refinement?: string;
+  run_generative_track?: boolean;
 }
 
 export const reconstructionService = {

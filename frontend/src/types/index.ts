@@ -158,6 +158,7 @@ export interface ReconstructionResult {
     ply: string;
     obj: string;
     confidence_glb: string;
+    generated_glb?: string | null;
   };
   vertex_count: number;
   face_count: number;

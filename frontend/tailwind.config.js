@@ -8,46 +8,51 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#090a0f',
-        surface: {
-          DEFAULT: '#0f111a',
-          hover: '#151824',
-          active: '#1c2030',
-          border: 'rgba(255, 255, 255, 0.08)',
+        background: '#1a1210',
+        ink: {
+          950: '#140d0c',
+          900: '#1a1210',
+          800: '#231815',
+          700: '#2d1f1c',
+          600: '#3a2824',
         },
-        brand: {
-          50: '#eef6ff',
-          100: '#d9ebff',
-          200: '#bcdbff',
-          300: '#8ec3ff',
-          400: '#599fff',
-          500: '#3077ff',
-          600: '#1554f5',
-          700: '#0e41e1',
-          800: '#1236b6',
-          900: '#14318f',
-          950: '#101f56',
+        cream: {
+          50: '#fffcf9',
+          100: '#fff8f1',
+          200: '#fbeee6',
+          300: '#edd8cc',
         },
-        accent: {
-          cyan: '#00f2fe',
-          violet: '#7928ca',
-          emerald: '#10b981',
-          amber: '#f59e0b',
-          rose: '#f43f5e',
-        }
+        coral: {
+          400: '#ff7767',
+          500: '#f0604f',
+          600: '#d94d3d',
+          700: '#be392b',
+        },
+        mono: {
+          bg: '#1a1210',
+          surface: '#231815',
+          fg: '#fff8f1',
+          muted: '#a89289',
+          ac: '#f0604f',
+          border: '#352521',
+          borderHover: '#4d3731',
+        },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        serif: ['"Fraunces"', 'serif'],
+        display: ['"Fraunces"', 'serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        wordmark: ['"Space Grotesk"', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
       },
       boxShadow: {
-        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-        'glow-brand': '0 0 24px -4px rgba(48, 119, 255, 0.35)',
-        'glow-cyan': '0 0 24px -4px rgba(0, 242, 254, 0.35)',
+        'btn': '0 2px 0 #b5382a',
+        'btn-hover': '0 3px 0 #b5382a',
+        'btn-dark': '0 2px 0 #140d0c',
+        'panel': '0 12px 32px -8px rgba(0, 0, 0, 0.5)',
       },
-      animation: {
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'spin-slow': 'spin 12s linear infinite',
+      borderRadius: {
+        'crisp': '6px',
       }
     },
   },
