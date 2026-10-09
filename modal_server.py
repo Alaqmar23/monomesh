@@ -15,8 +15,8 @@ from fastapi.middleware.cors import CORSMiddleware
 # ==========================================
 # This exactly mirrors your Colab notebook installation steps!
 image = (
-    modal.Image.debian_slim(python_version="3.10")
-    .apt_install("git", "libgl1-mesa-glx", "ninja-build", "libjpeg-dev", "libpng-dev")
+    modal.Image.from_registry("nvidia/cuda:12.1.1-devel-ubuntu22.04", add_python="3.10")
+    .apt_install("git", "libgl1-mesa-glx", "ninja-build", "libjpeg-dev", "libpng-dev", "g++", "build-essential")
     .run_commands("git clone https://github.com/TencentARC/InstantMesh.git /content/InstantMesh")
     # Install PyTorch FIRST
     .pip_install("torch==2.1.0", "torchvision==0.16.0", "xformers==0.0.22.post7", extra_index_url="https://download.pytorch.org/whl/cu121")
