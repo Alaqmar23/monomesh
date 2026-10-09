@@ -143,7 +143,8 @@ const ModelInspectorInner: React.FC<{
       hasNormals,
       textureType
     });
-  }, [scene, onInspect, onSceneReady]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scene]);
 
   return null;
 };
