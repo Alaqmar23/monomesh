@@ -20,8 +20,8 @@ image = (
     .run_commands("git clone https://github.com/TencentARC/InstantMesh.git /content/InstantMesh")
     # Install PyTorch
     .pip_install("torch==2.1.0", "torchvision==0.16.0", "xformers==0.0.22.post7", extra_index_url="https://download.pytorch.org/whl/cu121")
-    # Install other constraints
-    .pip_install("setuptools", "numpy<2", "huggingface-hub==0.17.3", "accelerate==0.24.1", "fastapi", "uvicorn", "python-multipart", "trimesh", "onnxruntime", "rembg", "pillow")
+    # Install other constraints (pin setuptools < 70 because pkg_resources was deleted in v70!)
+    .pip_install("setuptools<70", "torch==2.1.0", "numpy<2", "huggingface-hub==0.17.3", "accelerate==0.24.1", "fastapi", "uvicorn", "python-multipart", "trimesh", "onnxruntime", "rembg", "pillow")
     # Clean up requirements.txt and install
     .run_commands("sed -i -E '/gradio|nvdiffrast/d' /content/InstantMesh/requirements.txt")
     .run_commands("pip install -r /content/InstantMesh/requirements.txt")
