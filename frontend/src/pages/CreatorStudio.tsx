@@ -398,24 +398,12 @@ export const CreatorStudio: React.FC = () => {
             setProgressStage(6);
             setProgressPct(95);
 
-            // Decode base64 instantly without GC thrashing or data URI string-parsing overhead
-            const b64toBlob = (b64Data: string, contentType = 'model/gltf-binary') => {
-              const byteString = atob(b64Data);
-              const len = byteString.length;
-              const bytes = new Uint8Array(len);
-              for (let i = 0; i < len; i++) {
-                bytes[i] = byteString.charCodeAt(i);
-              }
-              return new Blob([bytes], { type: contentType });
-            };
-
-            const glbBlob = b64toBlob(statData.glb_base64);
-            const glbUrl = URL.createObjectURL(glbBlob);
-
+            // Stream the binary files directly into ThreeJS without ANY main-thread JSON parsing!
+            const glbUrl = `${activeUrl}/download/${jobId}/glb`;
+            
             let confUrl = glbUrl;
-            if (statData.confidence_glb_base64) {
-                const confBlob = b64toBlob(statData.confidence_glb_base64);
-                confUrl = URL.createObjectURL(confBlob);
+            if (statData.confidence_data) {
+                confUrl = `${activeUrl}/download/${jobId}/conf`;
             }
 
             setActiveMesh({
@@ -429,6 +417,9 @@ export const CreatorStudio: React.FC = () => {
 
             setStatus('COMPLETED');
             setProgressPct(100);
+
+            // Tell the backend it can delete the 30MB file from memory now that we have the URL
+            fetch(`${activeUrl}/cleanup/${jobId}`, { method: 'DELETE' }).catch(() => {});
           } else if (statData.status === 'FAILED') {
             clearInterval(pollInterval);
             clearInterval(ticker);

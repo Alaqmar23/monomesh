@@ -7,7 +7,7 @@ import base64
 import json
 import shutil
 import time
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 # ==========================================
@@ -265,8 +265,8 @@ with open(out_json_path, 'w') as f:
         # 3. Save Final Results to Modal Dict for React to download!
         job_dict[job_id] = {
             "status": "COMPLETED",
-            "glb_base64": base64.b64encode(glb_bytes).decode("utf-8"),
-            "confidence_glb_base64": base64.b64encode(conf_glb_bytes).decode("utf-8") if conf_glb_bytes else None,
+            "glb_bytes": glb_bytes,
+            "conf_glb_bytes": conf_glb_bytes if conf_glb_bytes else None,
             "confidence_data": conf_data,
             "vertex_count": int(len(mesh.vertices)),
             "face_count": int(len(mesh.faces)),
@@ -311,10 +311,32 @@ def check_status(job_id: str):
         job_dict.pop(job_id, None)
         return result
         
-    # If completed, return files and delete from memory!
-    result = dict(job)
-    job_dict.pop(job_id, None) 
+    # If completed, just return the metadata (no massive base64 files!)
+    result = {
+        "status": "COMPLETED",
+        "vertex_count": job.get("vertex_count"),
+        "face_count": job.get("face_count"),
+        "confidence_data": job.get("confidence_data")
+    }
     return result
+
+@web_app.get("/download/{job_id}/{file_type}")
+def download_file(job_id: str, file_type: str):
+    job = job_dict.get(job_id)
+    if not job or job["status"] != "COMPLETED":
+        return Response(status_code=404)
+        
+    if file_type == "glb" and "glb_bytes" in job:
+        return Response(content=job["glb_bytes"], media_type="model/gltf-binary")
+    elif file_type == "conf" and job.get("conf_glb_bytes"):
+        return Response(content=job["conf_glb_bytes"], media_type="model/gltf-binary")
+        
+    return Response(status_code=404)
+
+@web_app.delete("/cleanup/{job_id}")
+def cleanup_job(job_id: str):
+    job_dict.pop(job_id, None)
+    return {"status": "cleaned"}
 
 @app.function(image=image)
 @modal.asgi_app()
