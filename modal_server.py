@@ -31,11 +31,12 @@ image = (
 
 app = modal.App("sparse3d-instantmesh")
 job_dict = modal.Dict.from_name("instantmesh-jobs", create_if_missing=True)
+hf_volume = modal.Volume.from_name("huggingface-cache", create_if_missing=True)
 
 # ==========================================
 # 2. THE GPU WORKER
 # ==========================================
-@app.cls(gpu="T4", image=image, max_containers=5, scaledown_window=2)
+@app.cls(gpu="T4", image=image, max_containers=5, scaledown_window=2, volumes={"/root/.cache/huggingface": hf_volume})
 class InstantMeshWorker:
     @modal.enter()
     def setup(self):
