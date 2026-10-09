@@ -19,7 +19,7 @@ image = (
     .apt_install("git", "libgl1-mesa-glx", "ninja-build", "libjpeg-dev", "libpng-dev")
     .run_commands("git clone https://github.com/TencentARC/InstantMesh.git /content/InstantMesh")
     # Clean up requirements.txt and install it FIRST
-    .run_commands("sed -i -E '/gradio|nvdiffrast|torch|torchvision|xformers/d' /content/InstantMesh/requirements.txt")
+    .run_commands("sed -i -E '/^gradio/d; /^nvdiffrast/d; /^torch==/d; /^torch>=/d; /^torch$/d; /^torchvision/d; /^xformers/d' /content/InstantMesh/requirements.txt")
     .run_commands("pip install -r /content/InstantMesh/requirements.txt")
     # NOW install PyTorch with pinned versions so it doesn't get messed up
     .pip_install("torch==2.1.0", "torchvision==0.16.0", "xformers==0.0.22.post7", extra_index_url="https://download.pytorch.org/whl/cu121")
