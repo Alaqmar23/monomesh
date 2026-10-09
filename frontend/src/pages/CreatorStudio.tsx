@@ -286,9 +286,10 @@ export const CreatorStudio: React.FC = () => {
     processingTimers.current.forEach(clearInterval);
     processingTimers.current = [];
 
-    // Simple time ticker
+    // Unpausable time ticker based on system clock
+    const startTime = Date.now();
     const ticker = setInterval(() => {
-      setElapsedSec(s => s + 1);
+      setElapsedSec(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
     processingTimers.current.push(ticker as unknown as ReturnType<typeof setTimeout>);
 
