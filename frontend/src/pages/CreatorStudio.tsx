@@ -831,7 +831,7 @@ export const CreatorStudio: React.FC = () => {
                 <div className="w-full max-w-xs">
                   <div className="flex justify-between text-[10px] font-mono text-[#a89289] mb-1.5">
                     <span>Reconstruction pipeline</span>
-                    <span className="text-[#f0604f] font-semibold">{progressPct}%</span>
+                    <span className="text-[#f0604f] font-semibold">{Math.round(progressPct)}%</span>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-[#1a1210]/60 overflow-hidden">
                     <div
