@@ -715,7 +715,7 @@ export const CreatorStudio: React.FC = () => {
               )}
             </button>
             <p className="text-[10px] text-center text-[#a89289] mt-1.5 font-mono">
-              ⚡ Est. generation time: ~2 min
+              ⚡ Est. generation time: ~3 min
             </p>
           </div>
         </section>
@@ -825,7 +825,7 @@ export const CreatorStudio: React.FC = () => {
                     <span className="text-[#f0604f]/40">•</span>
                     <span className="inline-flex items-center gap-1 text-[#f0604f] font-medium bg-[#f0604f]/10 px-2 py-0.5 rounded border border-[#f0604f]/25">
                       <Clock size={11} />
-                      <span>Est. ~2 min</span>
+                      <span>Est. ~3 min</span>
                     </span>
                   </div>
                 </div>
