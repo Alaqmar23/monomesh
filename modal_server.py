@@ -327,15 +327,15 @@ def check_status(job_id: str):
     }
     return result
 
-@web_app.get("/download/{job_id}/{file_type}")
-def download_file(job_id: str, file_type: str):
+@web_app.get("/download/{job_id}/{filename}")
+def download_file(job_id: str, filename: str):
     job = job_dict.get(job_id)
     if not job or job["status"] != "COMPLETED":
         return Response(status_code=404)
         
-    if file_type == "glb" and "glb_bytes" in job:
+    if filename == "model.glb" and "glb_bytes" in job:
         return Response(content=job["glb_bytes"], media_type="model/gltf-binary")
-    elif file_type == "conf" and job.get("conf_glb_bytes"):
+    elif filename == "confidence.glb" and job.get("conf_glb_bytes"):
         return Response(content=job["conf_glb_bytes"], media_type="model/gltf-binary")
         
     return Response(status_code=404)

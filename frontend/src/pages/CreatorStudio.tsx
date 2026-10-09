@@ -399,11 +399,11 @@ export const CreatorStudio: React.FC = () => {
             setProgressPct(95);
 
             // Stream the binary files directly into ThreeJS without ANY main-thread JSON parsing!
-            const glbUrl = `${activeUrl}/download/${jobId}/glb`;
+            const glbUrl = `${activeUrl}/download/${jobId}/model.glb`;
             
             let confUrl = glbUrl;
             if (statData.confidence_data) {
-                confUrl = `${activeUrl}/download/${jobId}/conf`;
+                confUrl = `${activeUrl}/download/${jobId}/confidence.glb`;
             }
 
             setActiveMesh({
