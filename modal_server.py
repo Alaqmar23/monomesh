@@ -270,6 +270,7 @@ with open(out_json_path, 'w') as f:
             "confidence_data": conf_data,
             "vertex_count": int(len(mesh.vertices)),
             "face_count": int(len(mesh.faces)),
+            "glb_size": len(glb_bytes),
             "created_at": time.time(),
         }
 
@@ -323,6 +324,7 @@ def check_status(job_id: str):
         "status": "COMPLETED",
         "vertex_count": job.get("vertex_count"),
         "face_count": job.get("face_count"),
+        "glb_size": job.get("glb_size"),
         "confidence_data": job.get("confidence_data")
     }
     return result
