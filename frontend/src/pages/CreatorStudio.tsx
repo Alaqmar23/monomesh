@@ -172,7 +172,7 @@ export const CreatorStudio: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [stagedSample, setStagedSample] = useState<SamplePhoto | null>(null);
-  const [activeMesh, setActiveMesh] = useState<SamplePhoto | null>(null);
+  const [activeMesh, setActiveMesh] = useState<SamplePhoto & { glbSize?: number } | null>(null);
   const [status, setStatus] = useState<'IDLE' | 'PROCESSING' | 'COMPLETED'>('IDLE');
   const [progressStage, setProgressStage] = useState(0);
   const [progressPct, setProgressPct] = useState(0);
@@ -242,20 +242,11 @@ export const CreatorStudio: React.FC = () => {
       return;
     }
 
-    fetch(activeMesh.modelUrl)
-      .then((res) => {
-        const len = res.headers.get('content-length');
-        if (len) {
-          setModelFileSize(`${(parseInt(len, 10) / (1024 * 1024)).toFixed(2)} MB`);
-          return;
-        }
-        return res.blob().then((b) => {
-          setModelFileSize(`${(b.size / (1024 * 1024)).toFixed(2)} MB`);
-        });
-      })
-      .catch(() => {
-        setModelFileSize('1.05 MB');
-      });
+    if (activeMesh.glbSize) {
+      setModelFileSize(`${(activeMesh.glbSize / (1024 * 1024)).toFixed(2)} MB`);
+    } else {
+      setModelFileSize('Unknown MB');
+    }
   }, [activeMesh, file]);
 
   const handleSelectSample = (sample: SamplePhoto) => {
@@ -407,12 +398,13 @@ export const CreatorStudio: React.FC = () => {
             }
 
             setActiveMesh({
-              name: file.name,
+              name: file?.name || 'mesh',
               url: previewUrl!,
               hint: 'AI Generated',
               modelUrl: glbUrl,
               confidenceModelUrl: confUrl,
-              initialRotation: [0, 0, 0]
+              initialRotation: [0, 0, 0],
+              glbSize: statData.glb_size
             });
 
             setStatus('COMPLETED');
