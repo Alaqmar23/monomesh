@@ -424,7 +424,9 @@ export const CreatorStudio: React.FC = () => {
           } else if (statData.status === 'FAILED') {
             clearInterval(pollInterval);
             clearInterval(ticker);
-            throw new Error(statData.error_message || "Reconstruction failed on GPU.");
+            alert("GPU Error: " + (statData.error_message || "Reconstruction failed on GPU."));
+            setStatus('IDLE');
+            return;
           }
         } catch (e) {
            console.error("Polling error", e);
