@@ -290,6 +290,12 @@ export const CreatorStudio: React.FC = () => {
     const startTime = Date.now();
     const ticker = setInterval(() => {
       setElapsedSec(Math.floor((Date.now() - startTime) / 1000));
+      setProgressPct(prev => {
+        if (prev < 25) return prev + 0.4;
+        if (prev < 50) return prev + 0.2;
+        if (prev < 85) return prev + 0.1;
+        return prev;
+      });
     }, 1000);
     processingTimers.current.push(ticker as unknown as ReturnType<typeof setTimeout>);
 
@@ -370,7 +376,7 @@ export const CreatorStudio: React.FC = () => {
 
           if (statData.status === "PROCESSING") {
               const progress = statData.progress || 10;
-              setProgressPct(Math.max(5, progress));
+              setProgressPct(prev => Math.max(prev, progress));
               
               if (progress < 20) setProgressStage(1);
               else if (progress < 40) setProgressStage(2);
@@ -386,27 +392,18 @@ export const CreatorStudio: React.FC = () => {
             setProgressStage(6);
             setProgressPct(95);
 
-            // Convert Base64 strings back to physical Blobs in the browser
-            const b64toBlob = (b64Data: string, contentType = 'model/gltf-binary') => {
-              const byteCharacters = atob(b64Data);
-              const byteArrays = [];
-              for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-                const slice = byteCharacters.slice(offset, offset + 512);
-                const byteNumbers = new Array(slice.length);
-                for (let i = 0; i < slice.length; i++) {
-                  byteNumbers[i] = slice.charCodeAt(i);
-                }
-                byteArrays.push(new Uint8Array(byteNumbers));
-              }
-              return new Blob(byteArrays, { type: contentType });
+            // Use native fetch to decode Base64 instantly without blocking the main UI thread
+            const b64toBlob = async (b64Data: string, contentType = 'model/gltf-binary') => {
+              const res = await fetch(`data:${contentType};base64,${b64Data}`);
+              return await res.blob();
             };
 
-            const glbBlob = b64toBlob(statData.glb_base64);
+            const glbBlob = await b64toBlob(statData.glb_base64);
             const glbUrl = URL.createObjectURL(glbBlob);
 
             let confUrl = glbUrl;
             if (statData.confidence_glb_base64) {
-                const confBlob = b64toBlob(statData.confidence_glb_base64);
+                const confBlob = await b64toBlob(statData.confidence_glb_base64);
                 confUrl = URL.createObjectURL(confBlob);
             }
 
