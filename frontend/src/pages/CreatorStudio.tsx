@@ -262,6 +262,7 @@ export const CreatorStudio: React.FC = () => {
   }, [activeMesh, file]);
 
   const handleSelectSample = (sample: SamplePhoto) => {
+    if (status === 'PROCESSING') return;
     setPreviewUrl(sample.url);
     setStagedSample(sample);
     setFile(null);
@@ -269,6 +270,7 @@ export const CreatorStudio: React.FC = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (status === 'PROCESSING') return;
     if (e.target.files && e.target.files[0]) {
       const selected = e.target.files[0];
       setFile(selected);
@@ -279,6 +281,7 @@ export const CreatorStudio: React.FC = () => {
   };
 
   const handleStartOver = () => {
+    if (status === 'PROCESSING') return;
     setFile(null);
     setPreviewUrl(null);
     setStagedSample(null);
@@ -599,9 +602,14 @@ export const CreatorStudio: React.FC = () => {
             {(previewUrl || status !== 'IDLE') && (
               <button
                 type="button"
+                disabled={status === 'PROCESSING'}
                 onClick={handleStartOver}
-                className="btn-outline px-3 py-1.5 text-xs text-[#a89289] hover:text-[#fff8f1] flex items-center gap-1.5 transition-colors rounded border border-[#f0604f]/25 hover:border-[#f0604f]/60 bg-[#1a1210]/40"
-                title="Reset Studio"
+                className={`btn-outline px-3 py-1.5 text-xs flex items-center gap-1.5 transition-colors rounded border ${
+                  status === 'PROCESSING'
+                    ? 'text-[#a89289]/50 border-[#f0604f]/10 bg-[#1a1210]/20 cursor-not-allowed pointer-events-none'
+                    : 'text-[#a89289] hover:text-[#fff8f1] border-[#f0604f]/25 hover:border-[#f0604f]/60 bg-[#1a1210]/40'
+                }`}
+                title={status === 'PROCESSING' ? 'Cannot reset while generating' : 'Reset Studio'}
               >
                 <RotateCcw size={12} />
                 <span>Start over</span>
@@ -626,11 +634,12 @@ export const CreatorStudio: React.FC = () => {
           </div>
 
           {/* Dropzone Target */}
-          <label className="block relative w-full h-32 shrink-0 rounded border border-dashed border-[#f0604f]/25 hover:border-[#f0604f] bg-[#1a1210]/10 hover:bg-[#1a1210]/25 transition-colors cursor-pointer overflow-hidden group">
+          <label className={`block relative w-full h-32 shrink-0 rounded border border-dashed border-[#f0604f]/25 hover:border-[#f0604f] bg-[#1a1210]/10 hover:bg-[#1a1210]/25 transition-colors overflow-hidden group ${status === 'PROCESSING' ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'cursor-pointer'}`}>
             <input
               type="file"
               accept="image/*"
               onChange={handleFileChange}
+              disabled={status === 'PROCESSING'}
               className="hidden"
             />
             {previewUrl ? (
@@ -675,12 +684,13 @@ export const CreatorStudio: React.FC = () => {
                   <button
                     key={s.name}
                     type="button"
+                    disabled={status === 'PROCESSING'}
                     onClick={() => handleSelectSample(s)}
                     className={`flex flex-col items-start p-1.5 rounded transition-all text-left group border ${
                       isSelected
                         ? 'border-[#f0604f] bg-[#f0604f]/20 shadow-[0_0_10px_rgba(240,96,79,0.25)]'
                         : 'border-[#f0604f]/20 bg-[#1a1210]/15 hover:border-[#f0604f]/60'
-                    }`}
+                    } ${status === 'PROCESSING' ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     <div
                       className="w-full h-14 bg-contain bg-center bg-no-repeat rounded mb-1.5"
