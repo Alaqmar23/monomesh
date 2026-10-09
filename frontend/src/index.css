@@ -7,25 +7,15 @@ html {
 }
 
 :root {
-  --bg: #09090b;
-  --surface: rgba(24, 24, 27, 0.4);
-  --surface-raised: rgba(39, 39, 42, 0.6);
-  --fg: #fafafa;
-  --muted: #a1a1aa;
+  --bg: #1a1210;
+  --surface: #231815;
+  --surface-raised: #2a1d1a;
+  --fg: #fff8f1;
+  --muted: #a89289;
   --ac: #f0604f;
-  --ac-glow: rgba(240, 96, 79, 0.4);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.15);
-  --line: #e5e5e5;
-}
-
-body {
-  background-color: var(--bg);
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(240, 96, 79, 0.08), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(120, 119, 198, 0.08), transparent 25%);
-  background-attachment: fixed;
-  color: var(--fg);
+  --border: #352521;
+  --border-hover: #4d3731;
+  --line: #fff8f1;
 }
 
 @layer base {
@@ -119,60 +109,49 @@ body {
   overflow: visible;
 }
 
-/* Sleek Glowing Button Utilities */
+/* Tactile Physical Button Utilities */
 .btn-coral {
-  background: linear-gradient(135deg, var(--ac), #ff8a76);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  box-shadow: 0 4px 14px var(--ac-glow), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  font-weight: 600;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  background-color: var(--ac);
+  color: #fff8f1;
+  border: 1px solid #d94d3d;
+  border-radius: 6px;
+  box-shadow: 0 2px 0 #b5382a;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  font-weight: 500;
 }
 
 .btn-coral:hover {
-  background: linear-gradient(135deg, #ff6b57, #ff9b89);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px var(--ac-glow), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background-color: #ff6b57;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 #b5382a;
 }
 
 .btn-coral:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px var(--ac-glow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #b5382a;
 }
 
 .btn-outline {
-  background-color: var(--surface);
-  backdrop-filter: blur(8px);
+  background-color: transparent;
   color: var(--fg);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 6px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
   font-weight: 500;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-outline:hover {
-  background-color: var(--surface-raised);
+  background-color: var(--surface);
   border-color: var(--border-hover);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transform: translateY(-1px);
 }
 
 .btn-outline:active {
-  background-color: rgba(255, 255, 255, 0.02);
-  transform: translateY(0);
+  background-color: var(--surface-raised);
 }
 
-/* Premium Glassmorphism Panel */
+/* Simple 1-level flat panel container */
 .flat-panel {
-  background: var(--surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
 }
 
 /* Fine grid background texture */
