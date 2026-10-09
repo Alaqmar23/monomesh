@@ -18,13 +18,13 @@ image = (
     modal.Image.debian_slim(python_version="3.10")
     .apt_install("git", "libgl1-mesa-glx", "ninja-build", "libjpeg-dev", "libpng-dev")
     .run_commands("git clone https://github.com/TencentARC/InstantMesh.git /content/InstantMesh")
-    # Install PyTorch
+    # Clean up requirements.txt and install it FIRST
+    .run_commands("sed -i -E '/gradio|nvdiffrast|torch|torchvision|xformers/d' /content/InstantMesh/requirements.txt")
+    .run_commands("pip install -r /content/InstantMesh/requirements.txt")
+    # NOW install PyTorch with pinned versions so it doesn't get messed up
     .pip_install("torch==2.1.0", "torchvision==0.16.0", "xformers==0.0.22.post7", extra_index_url="https://download.pytorch.org/whl/cu121")
     # Install other constraints (pin setuptools < 70 because pkg_resources was deleted in v70!)
-    .pip_install("setuptools<70", "torch==2.1.0", "numpy<2", "huggingface-hub==0.17.3", "accelerate==0.24.1", "fastapi", "uvicorn", "python-multipart", "trimesh", "onnxruntime", "rembg", "pillow")
-    # Clean up requirements.txt and install
-    .run_commands("sed -i -E '/gradio|nvdiffrast/d' /content/InstantMesh/requirements.txt")
-    .run_commands("pip install -r /content/InstantMesh/requirements.txt")
+    .pip_install("setuptools<70", "numpy<2", "huggingface-hub==0.17.3", "accelerate==0.24.1", "fastapi", "uvicorn", "python-multipart", "trimesh", "onnxruntime", "rembg", "pillow")
     # Install nvdiffrast manually
     .run_commands("pip install --no-build-isolation git+https://github.com/NVlabs/nvdiffrast.git@v0.3.3")
 )
