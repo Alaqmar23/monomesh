@@ -18,13 +18,15 @@ image = (
     modal.Image.from_registry("nvidia/cuda:12.1.1-devel-ubuntu22.04", add_python="3.10")
     .apt_install("git", "libgl1-mesa-glx", "ninja-build", "libjpeg-dev", "libpng-dev", "g++", "build-essential")
     .run_commands("git clone https://github.com/TencentARC/InstantMesh.git /content/InstantMesh")
-    # Install PyTorch FIRST
-    .pip_install("torch==2.1.0", "torchvision==0.16.0", "xformers==0.0.22.post7", extra_index_url="https://download.pytorch.org/whl/cu121")
     # Clean up requirements.txt and install it
     .run_commands("sed -i -E '/^gradio/d; /nvdiffrast/d; /^torch([=<>!].*)?$/d; /^torchvision([=<>!].*)?$/d; /^xformers([=<>!].*)?$/d' /content/InstantMesh/requirements.txt")
-    .run_commands("pip install -r /content/InstantMesh/requirements.txt")
-    # Install other constraints (pin setuptools < 70 because pkg_resources was deleted in v70!)
-    .pip_install("setuptools<70", "numpy<2", "huggingface-hub==0.17.3", "accelerate==0.24.1", "fastapi", "uvicorn", "python-multipart", "trimesh", "onnxruntime", "rembg", "pillow")
+    # Install ALL python dependencies in a single step so pip resolver locks PyTorch and wheel is present
+    .run_commands(
+        "pip install wheel \"setuptools<70\" torch==2.1.0 torchvision==0.16.0 xformers==0.0.22.post7 "
+        "\"numpy<2\" huggingface-hub==0.17.3 accelerate==0.24.1 fastapi uvicorn python-multipart "
+        "trimesh onnxruntime rembg pillow -r /content/InstantMesh/requirements.txt "
+        "--extra-index-url https://download.pytorch.org/whl/cu121"
+    )
     # Install nvdiffrast manually
     .run_commands("pip install --no-build-isolation git+https://github.com/NVlabs/nvdiffrast.git@v0.3.3")
 )
