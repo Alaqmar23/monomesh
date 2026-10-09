@@ -179,6 +179,18 @@ export const CreatorStudio: React.FC = () => {
   const [elapsedSec, setElapsedSec] = useState(0);
   const [viewportMode, setViewportMode] = useState<'SOLID' | 'WIREFRAME' | 'CONFIDENCE'>('SOLID');
   const [autoRotate, setAutoRotate] = useState(true);
+
+  // Keep the progress stage text strictly tied to the artificially crawling progress percentage
+  // so the user actually sees the logs progress even while waiting on long backend steps.
+  useEffect(() => {
+    if (status !== 'PROCESSING') return;
+    if (progressPct < 15) setProgressStage(1);
+    else if (progressPct < 30) setProgressStage(2);
+    else if (progressPct < 45) setProgressStage(3);
+    else if (progressPct < 60) setProgressStage(4);
+    else if (progressPct < 75) setProgressStage(5);
+    else setProgressStage(6);
+  }, [progressPct, status]);
   const [rotationAngle, setRotationAngle] = useState(30);
   const [exportFormat, setExportFormat] = useState<'GLB' | 'OBJ' | 'PLY'>('GLB');
   const [isFormatDropdownOpen, setIsFormatDropdownOpen] = useState(false);
@@ -377,12 +389,6 @@ export const CreatorStudio: React.FC = () => {
           if (statData.status === "PROCESSING") {
               const progress = statData.progress || 10;
               setProgressPct(prev => Math.max(prev, progress));
-              
-              if (progress < 20) setProgressStage(1);
-              else if (progress < 40) setProgressStage(2);
-              else if (progress < 60) setProgressStage(3);
-              else if (progress < 80) setProgressStage(4);
-              else setProgressStage(5);
           }
 
           if (statData.status === 'COMPLETED') {
