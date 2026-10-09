@@ -398,18 +398,23 @@ export const CreatorStudio: React.FC = () => {
             setProgressStage(6);
             setProgressPct(95);
 
-            // Use native fetch to decode Base64 instantly without blocking the main UI thread
-            const b64toBlob = async (b64Data: string, contentType = 'model/gltf-binary') => {
-              const res = await fetch(`data:${contentType};base64,${b64Data}`);
-              return await res.blob();
+            // Decode base64 instantly without GC thrashing or data URI string-parsing overhead
+            const b64toBlob = (b64Data: string, contentType = 'model/gltf-binary') => {
+              const byteString = atob(b64Data);
+              const len = byteString.length;
+              const bytes = new Uint8Array(len);
+              for (let i = 0; i < len; i++) {
+                bytes[i] = byteString.charCodeAt(i);
+              }
+              return new Blob([bytes], { type: contentType });
             };
 
-            const glbBlob = await b64toBlob(statData.glb_base64);
+            const glbBlob = b64toBlob(statData.glb_base64);
             const glbUrl = URL.createObjectURL(glbBlob);
 
             let confUrl = glbUrl;
             if (statData.confidence_glb_base64) {
-                const confBlob = await b64toBlob(statData.confidence_glb_base64);
+                const confBlob = b64toBlob(statData.confidence_glb_base64);
                 confUrl = URL.createObjectURL(confBlob);
             }
 
