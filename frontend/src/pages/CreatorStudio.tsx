@@ -590,9 +590,14 @@ export const CreatorStudio: React.FC = () => {
             {/* Go to Home Page Button */}
             <button
               type="button"
+              disabled={status === 'PROCESSING'}
               onClick={() => navigate('/')}
-              className="btn-outline px-3 py-1.5 text-xs text-[#a89289] hover:text-[#fff8f1] flex items-center gap-1.5 transition-colors rounded border border-[#f0604f]/25 hover:border-[#f0604f]/60 bg-[#1a1210]/40"
-              title="Return to Home Page"
+              className={`btn-outline px-3 py-1.5 text-xs flex items-center gap-1.5 transition-colors rounded border ${
+                status === 'PROCESSING'
+                  ? 'text-[#a89289]/50 border-[#f0604f]/10 bg-[#1a1210]/20 cursor-not-allowed pointer-events-none'
+                  : 'text-[#a89289] hover:text-[#fff8f1] border-[#f0604f]/25 hover:border-[#f0604f]/60 bg-[#1a1210]/40'
+              }`}
+              title={status === 'PROCESSING' ? 'Cannot leave while generating' : 'Return to Home Page'}
             >
               <Home size={13} />
               <span>Home</span>
