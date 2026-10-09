@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Center, Environment, useGLTF } from '@react-three/drei';
+import { OrbitControls, Center, Environment, useGLTF, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { DualModelClipper } from '../components/common/ExampleShowcase';
 import {
@@ -156,6 +156,17 @@ const ModelInspector: React.FC<{
 }> = ({ modelUrl, onInspect, onSceneReady }) => {
   if (!modelUrl) return null;
   return <ModelInspectorInner modelUrl={modelUrl} onInspect={onInspect} onSceneReady={onSceneReady} />;
+};
+
+const CanvasLoader = () => {
+  return (
+    <Html center>
+      <div className="flex flex-col items-center justify-center p-4 bg-[#111111]/80 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl">
+        <div className="w-8 h-8 border-2 border-white/20 border-t-white/90 rounded-full animate-spin mb-3"></div>
+        <div className="text-white/80 font-mono text-sm whitespace-nowrap">Downloading Mesh...</div>
+      </div>
+    </Html>
+  );
 };
 
 const GENERATION_STAGES = [
@@ -868,7 +879,7 @@ export const CreatorStudio: React.FC = () => {
                     gl={{ antialias: true, powerPreference: 'high-performance', localClippingEnabled: true }}
                     camera={{ position: [0, 0, 4], fov: 45 }}
                   >
-                    <Suspense fallback={null}>
+                    <Suspense fallback={<CanvasLoader />}>
                       <ModelInspector
                         modelUrl={activeMesh?.modelUrl}
                         onInspect={setRealMeshStats}
