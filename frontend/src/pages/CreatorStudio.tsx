@@ -417,9 +417,6 @@ export const CreatorStudio: React.FC = () => {
 
             setStatus('COMPLETED');
             setProgressPct(100);
-
-            // Tell the backend it can delete the 30MB file from memory now that we have the URL
-            fetch(`${activeUrl}/cleanup/${jobId}`, { method: 'DELETE' }).catch(() => {});
           } else if (statData.status === 'FAILED') {
             clearInterval(pollInterval);
             clearInterval(ticker);

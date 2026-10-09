@@ -270,6 +270,7 @@ with open(out_json_path, 'w') as f:
             "confidence_data": conf_data,
             "vertex_count": int(len(mesh.vertices)),
             "face_count": int(len(mesh.faces)),
+            "created_at": time.time(),
         }
 
 
@@ -288,6 +289,12 @@ web_app.add_middleware(
 
 @web_app.post("/submit")
 async def submit_job(image: UploadFile = File(...)):
+    # Sweep old jobs to prevent memory leaks (delete jobs older than 10 minutes)
+    now = time.time()
+    expired = [jid for jid, j in job_dict.items() if j.get("created_at", now) < now - 600]
+    for jid in expired:
+        job_dict.pop(jid, None)
+
     image_bytes = await image.read()
     job_id = f"job_{int(time.time())}"
     job_dict[job_id] = {"status": "QUEUED", "progress": 0}
