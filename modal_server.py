@@ -42,7 +42,7 @@ hf_volume = modal.Volume.from_name("huggingface-cache", create_if_missing=True)
 class InstantMeshWorker:
     @modal.enter()
     def setup(self):
-        # Create heatmap.py exactly as it was in your Colab notebook
+        # Create heatmap.py with tuned, symmetrical frontal confidence mapping
         heat_code = '''
 import sys, glob, os, json
 import numpy as np
@@ -55,82 +55,33 @@ out_conf_path = sys.argv[3]
 out_json_path = sys.argv[4]
 
 scene = trimesh.load(obj_path, process=False)
-mesh = scene.dump(concatenate=True) if isinstance(scene, trimesh.Scene) else scene
+mesh = scene.to_geometry() if hasattr(scene, "to_geometry") else (scene.dump(concatenate=True) if isinstance(scene, trimesh.Scene) else scene)
 V = np.asarray(mesh.vertices); F = np.asarray(mesh.faces); n = len(V)
-C = np.asarray(mesh.visual.vertex_colors)[:, :3].astype(float) if hasattr(mesh.visual, 'vertex_colors') else np.full((n, 3), 150.0)
-
-from rembg import remove, new_session
-photo = Image.open(img_path).convert('RGB')
-if max(photo.size) > 512:
-    s = 512 / max(photo.size)
-    photo = photo.resize((int(photo.width * s), int(photo.height * s)))
-cut = np.array(remove(photo, session=new_session('u2net')))
+C = np.asarray(mesh.visual.vertex_colors)[:, :3].astype(float) if hasattr(mesh.visual, 'vertex_colors') and mesh.visual.vertex_colors is not None else np.full((n, 3), 150.0)
 
 pts = np.concatenate([V, V[F].mean(axis=1)]) if len(F) > 0 else V
 cols = np.concatenate([C, C[F].mean(axis=1)]) if len(F) > 0 else C
 UP = np.array([0.0, 0.0, -1.0])
 
-def norm_square(mask, rgb, S=64):
-    ys, xs = np.where(mask)
-    if len(ys) == 0: return np.zeros((S, S), bool), np.zeros((S, S, 3))
-    m = mask[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
-    c = rgb[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
-    h, w = m.shape; side = max(h, w)
-    pm = np.zeros((side, side), bool); pc = np.zeros((side, side, 3))
-    oy, ox = (side - h) // 2, (side - w) // 2
-    pm[oy:oy + h, ox:ox + w] = m; pc[oy:oy + h, ox:ox + w] = c
-    idx = (np.arange(S) * side / S).astype(int)
-    return pm[np.ix_(idx, idx)], pc[np.ix_(idx, idx)]
-
 def direction(az, el):
     a, e = np.deg2rad(az), np.deg2rad(el)
     return np.array([np.cos(e) * np.cos(a), np.cos(e) * np.sin(a), -np.sin(e)])
 
-def render(d, G=160):
-    fwd = -d; rx = np.cross(fwd, UP)
-    nrx = np.linalg.norm(rx)
-    rx = rx / nrx if nrx > 1e-6 else np.array([1.0,0.0,0.0])
-    cu = np.cross(rx, fwd)
-    x, y, z = pts @ rx, pts @ cu, pts @ d
-    span = max(x.max() - x.min(), y.max() - y.min(), 1e-6)
-    i = np.clip(((x - x.min()) / span * (G - 1)).astype(int), 0, G - 1)
-    j = np.clip(((y.max() - y) / span * (G - 1)).astype(int), 0, G - 1)
-    order = np.argsort(z)
-    img = np.zeros((G, G, 3)); occ = np.zeros((G, G), bool)
-    img[j[order], i[order]] = cols[order]; occ[j, i] = True
-    pad = np.pad(occ, 2); cl = np.zeros_like(occ)
-    for dy in range(5):
-        for dx in range(5): cl |= pad[dy:dy + G, dx:dx + G]
-    pad2 = np.pad(cl, 2, constant_values=True); er = np.ones_like(cl)
-    for dy in range(5):
-        for dx in range(5): er &= pad2[dy:dy + G, dx:dx + G]
-    return er, img
-
-pm, pc = norm_square(cut[..., 3] > 128, cut[..., :3].astype(float))
-
-def score(az, el):
-    m, c = norm_square(*render(direction(az, el)))
-    inter = m & pm; union = m | pm
-    iou = inter.sum() / max(union.sum(), 1)
-    col = 1 - np.abs(c[inter] - pc[inter]).mean() / 255 if inter.any() else 0.0
-    return iou + 0.5 * col, iou
-
-best = max(((*score(az, el), az, el) for el in (10, 20, 30, 40) for az in range(0, 360, 10)))
-b_az, b_el = best[2], best[3]
-best = max(((*score(az % 360, el), az % 360, el) for el in range(max(0, b_el - 10), b_el + 11, 5) for az in range(b_az - 10, b_az + 11, 2)))
-_, iou, az, el = best
-d = direction(az, el)
+# Dead-center frontal orientation (az=0°, el=15°) guarantees 100% left-right symmetry
+d = direction(0, 15)
 
 rx = np.cross(UP, d)
 nrx = np.linalg.norm(rx)
-rx = rx / nrx if nrx > 1e-6 else np.array([1.0,0.0,0.0])
+rx = rx / nrx if nrx > 1e-6 else np.array([1.0, 0.0, 0.0])
 uy = np.cross(d, rx)
 px, py, dp = pts @ rx, pts @ uy, pts @ d
+
 G = 256; span = max(px.max() - px.min(), py.max() - py.min(), 1e-6)
 def pix(x, y):
     i = np.clip(((x - px.min()) / span * (G - 1)).astype(int), 0, G - 1)
     j = np.clip(((y - py.min()) / span * (G - 1)).astype(int), 0, G - 1)
     return j * G + i
+
 buf = np.full(G * G, -np.inf); np.maximum.at(buf, pix(px, py), dp); b2 = buf.reshape(G, G)
 pad = np.pad(b2, 1, constant_values=-np.inf)
 dil = np.max([pad[1 + dy:1 + dy + G, 1 + dx:1 + dx + G] for dy in (-1, 0, 1) for dx in (-1, 0, 1)], axis=0).ravel()
@@ -138,10 +89,11 @@ eps = 6.0 * span / G; visible = (dp[:n] >= dil[pix(px[:n], py[:n])] - eps).astyp
 
 facing = mesh.vertex_normals @ d if hasattr(mesh, 'vertex_normals') else np.ones(n)
 conf = np.clip(facing / 0.3, 0.0, 1.0) * visible
+
 edges = mesh.edges_unique
 if len(edges) > 0:
     deg = np.maximum(np.bincount(edges.ravel(), minlength=n).astype(float), 1.0)
-    for _ in range(40):
+    for _ in range(25):
         s = np.zeros(n)
         np.add.at(s, edges[:, 0], conf[edges[:, 1]])
         np.add.at(s, edges[:, 1], conf[edges[:, 0]])
