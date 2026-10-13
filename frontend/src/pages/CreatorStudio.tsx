@@ -14,7 +14,8 @@ import {
   Clock,
   Box,
   Home,
-  RotateCcw
+  RotateCcw,
+  Info
 } from 'lucide-react';
 import { InteractiveBackground } from '../components/common/InteractiveBackground';
 import { MonomeshLogo } from '../components/common/MonomeshLogo';
@@ -676,6 +677,17 @@ export const CreatorStudio: React.FC = () => {
             </div>
             <p className="text-[11px] leading-relaxed">
               Use a plain background, keep the object centered, and make sure lighting is even.
+            </p>
+          </div>
+
+          {/* Orientation Notice */}
+          <div className="bg-[#1a1210]/20 p-2.5 rounded border border-[#f0604f]/20 text-xs text-[#a89289] space-y-1">
+            <div className="text-[11px] font-mono text-[#f0604f] flex items-center gap-1.5">
+              <Info size={12} className="shrink-0" />
+              <span>Note on orientation</span>
+            </div>
+            <p className="text-[11px] leading-relaxed text-[#a89289]">
+              Generated 3D meshes will be horizontally inverted (mirrored left-to-right) relative to the original image.
             </p>
           </div>
 
