@@ -629,9 +629,9 @@ export const CreatorStudio: React.FC = () => {
       <main className="relative z-20 flex-1 min-h-0 max-w-[1400px] w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-[300px_1fr_280px] gap-4 items-stretch overflow-y-auto lg:overflow-hidden max-lg:overflow-hidden">
 
         {/* PANE 1: INPUT & PHOTO SELECTION */}
-        <section className={`flat-panel p-4 bg-[#181210]/15 backdrop-blur-sm border border-[#f0604f]/25 rounded-lg shadow-xl flex flex-col h-full space-y-4 overflow-y-auto min-h-0 custom-scrollbar ${status !== 'IDLE' ? 'max-lg:hidden' : ''}`}>
+        <section className={`flat-panel p-4 bg-[#181210]/15 backdrop-blur-sm border border-[#f0604f]/25 rounded-lg shadow-xl flex flex-col h-full space-y-3 overflow-hidden min-h-0 ${status !== 'IDLE' ? 'max-lg:hidden' : ''}`}>
           <div>
-            <h2 className="text-sm font-medium text-[#fff8f1] mb-1">
+            <h2 className="text-sm font-medium text-[#fff8f1] mb-0.5">
               Input photo
             </h2>
             <p className="text-xs text-[#a89289]">
@@ -640,7 +640,7 @@ export const CreatorStudio: React.FC = () => {
           </div>
 
           {/* Dropzone Target */}
-          <label className={`block relative w-full h-32 shrink-0 rounded border border-dashed border-[#f0604f]/25 hover:border-[#f0604f] bg-[#1a1210]/10 hover:bg-[#1a1210]/25 transition-colors overflow-hidden group ${status === 'PROCESSING' ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'cursor-pointer'}`}>
+          <label className={`block relative w-full h-28 shrink-0 rounded border border-dashed border-[#f0604f]/25 hover:border-[#f0604f] bg-[#1a1210]/10 hover:bg-[#1a1210]/25 transition-colors overflow-hidden group ${status === 'PROCESSING' ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'cursor-pointer'}`}>
             <input
               type="file"
               accept="image/*"
@@ -659,42 +659,36 @@ export const CreatorStudio: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-[#a89289] p-4 text-center">
-                <div className="w-10 h-10 rounded bg-[#241d1a]/25 border border-[#f0604f]/25 flex items-center justify-center text-[#fff8f1] group-hover:text-[#f0604f] transition-colors">
-                  <Upload size={18} />
+              <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 text-[#a89289] p-3 text-center">
+                <div className="w-9 h-9 rounded bg-[#241d1a]/25 border border-[#f0604f]/25 flex items-center justify-center text-[#fff8f1] group-hover:text-[#f0604f] transition-colors">
+                  <Upload size={16} />
                 </div>
                 <span className="text-xs font-medium text-[#fff8f1]">Drop a photo or click to browse</span>
-                <span className="text-[11px] text-[#a89289]">JPG, PNG or WEBP</span>
+                <span className="text-[10px] text-[#a89289]">JPG, PNG or WEBP</span>
               </div>
             )}
           </label>
 
-          {/* Honest Tips Hint (Near Dropzone) */}
-          <div className="bg-[#1a1210]/15 p-3 rounded border border-[#f0604f]/15 text-xs text-[#a89289] space-y-1">
-            <div className="text-[11px] font-mono text-[#fff8f1] flex items-center gap-1.5">
-              <span>💡</span>
-              <span>Tips for best results</span>
+          {/* Unified Guide & Orientation Card */}
+          <div className="bg-[#1a1210]/20 p-2.5 rounded border border-[#f0604f]/20 text-xs text-[#a89289] space-y-2 shrink-0">
+            <div className="flex items-start gap-2">
+              <span className="text-xs shrink-0 select-none">💡</span>
+              <p className="text-[11px] leading-relaxed">
+                <span className="text-[#fff8f1] font-medium">Best results:</span> Plain background, centered object, even lighting.
+              </p>
             </div>
-            <p className="text-[11px] leading-relaxed">
-              Use a plain background, keep the object centered, and make sure lighting is even.
-            </p>
+            <div className="flex items-start gap-2 pt-2 border-t border-[#f0604f]/15">
+              <Info size={13} className="text-[#f0604f] shrink-0 mt-0.5" />
+              <p className="text-[11px] leading-relaxed">
+                <span className="text-[#f0604f] font-medium">Note:</span> Output meshes are horizontally inverted (mirrored left-to-right).
+              </p>
+            </div>
           </div>
 
-          {/* Orientation Notice */}
-          <div className="bg-[#1a1210]/20 p-2.5 rounded border border-[#f0604f]/20 text-xs text-[#a89289] space-y-1">
-            <div className="text-[11px] font-mono text-[#f0604f] flex items-center gap-1.5">
-              <Info size={12} className="shrink-0" />
-              <span>Note on orientation</span>
-            </div>
-            <p className="text-[11px] leading-relaxed text-[#a89289]">
-              Generated 3D meshes will be horizontally inverted (mirrored left-to-right) relative to the original image.
-            </p>
-          </div>
-
-          {/* 3 Clickable Sample Thumbnails (Not Text Pills) */}
+          {/* Clickable Sample Thumbnails */}
           <div className="shrink-0">
-            <span className="text-[11px] font-mono text-[#a89289] block mb-2">Or test with a sample:</span>
-            <div className="grid grid-cols-3 gap-2">
+            <span className="text-[11px] font-mono text-[#a89289] block mb-1.5">Or test with a sample:</span>
+            <div className="grid grid-cols-2 gap-2">
               {SAMPLE_PHOTOS.map((s) => {
                 const isSelected = stagedSample?.name === s.name;
                 return (
@@ -710,7 +704,7 @@ export const CreatorStudio: React.FC = () => {
                     } ${status === 'PROCESSING' ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     <div
-                      className="w-full h-14 bg-contain bg-center bg-no-repeat rounded mb-1.5"
+                      className="w-full h-12 bg-contain bg-center bg-no-repeat rounded mb-1"
                       style={{ backgroundImage: `url(${s.url})`, backgroundColor: '#e6dac3' }}
                     />
                     <span className={`text-[11px] font-medium truncate w-full ${
@@ -730,7 +724,7 @@ export const CreatorStudio: React.FC = () => {
               type="button"
               onClick={handleRunReconstruction}
               disabled={status === 'PROCESSING'}
-              className="w-full py-3 btn-coral text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-transform active:scale-[0.98]"
+              className="w-full py-2.5 btn-coral text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-transform active:scale-[0.98]"
             >
               {status === 'PROCESSING' ? (
                 <div className="flex items-center gap-2">
@@ -741,7 +735,7 @@ export const CreatorStudio: React.FC = () => {
                 <span>{status === 'COMPLETED' ? 'Generate mesh' : 'Make my mesh'}</span>
               )}
             </button>
-            <p className="text-[10px] text-center text-[#a89289] mt-1.5 font-mono">
+            <p className="text-[10px] text-center text-[#a89289] mt-1 font-mono">
               ⚡ Est. generation time: ~3 min
             </p>
           </div>
