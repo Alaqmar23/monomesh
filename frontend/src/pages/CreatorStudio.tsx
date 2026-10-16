@@ -262,6 +262,20 @@ export const CreatorStudio: React.FC = () => {
     }
   }, [activeMesh, file]);
 
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  useEffect(() => {
+    const preventDefaults = (e: DragEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('dragover', preventDefaults);
+    window.addEventListener('drop', preventDefaults);
+    return () => {
+      window.removeEventListener('dragover', preventDefaults);
+      window.removeEventListener('drop', preventDefaults);
+    };
+  }, []);
+
   const handleSelectSample = (sample: SamplePhoto) => {
     if (status === 'PROCESSING') return;
     setPreviewUrl(sample.url);
@@ -270,14 +284,43 @@ export const CreatorStudio: React.FC = () => {
     // Preserves current 3D mesh and stats until user clicks generate
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const processSelectedFile = (selected: File) => {
     if (status === 'PROCESSING') return;
-    if (e.target.files && e.target.files[0]) {
-      const selected = e.target.files[0];
+    if (selected.type.startsWith('image/') || /\.(jpe?g|png|webp|avif|bmp)$/i.test(selected.name)) {
       setFile(selected);
       setPreviewUrl(URL.createObjectURL(selected));
       setStagedSample(null);
-      // Preserves current 3D mesh and stats until user clicks generate
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (status === 'PROCESSING') return;
+    if (e.target.files && e.target.files[0]) {
+      processSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (status === 'PROCESSING') return;
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    if (status === 'PROCESSING') return;
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processSelectedFile(e.dataTransfer.files[0]);
     }
   };
 
@@ -640,7 +683,21 @@ export const CreatorStudio: React.FC = () => {
           </div>
 
           {/* Dropzone Target */}
-          <label className={`block relative w-full h-28 shrink-0 rounded border border-dashed border-[#f0604f]/25 hover:border-[#f0604f] bg-[#1a1210]/10 hover:bg-[#1a1210]/25 transition-colors overflow-hidden group ${status === 'PROCESSING' ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'cursor-pointer'}`}>
+          <label
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`block relative w-full h-28 shrink-0 rounded border-2 border-dashed transition-all overflow-hidden group ${
+              status === 'PROCESSING'
+                ? 'opacity-50 cursor-not-allowed pointer-events-none'
+                : 'cursor-pointer'
+            } ${
+              isDragOver
+                ? 'border-[#f0604f] bg-[#f0604f]/20 shadow-[0_0_15px_rgba(240,96,79,0.3)] scale-[1.01]'
+                : 'border-[#f0604f]/25 hover:border-[#f0604f] bg-[#1a1210]/10 hover:bg-[#1a1210]/25'
+            }`}
+          >
             <input
               type="file"
               accept="image/*"
@@ -649,21 +706,35 @@ export const CreatorStudio: React.FC = () => {
               className="hidden"
             />
             {previewUrl ? (
-              <div className="w-full h-full relative">
+              <div className="w-full h-full relative pointer-events-none">
                 <div
                   className="w-full h-full bg-contain bg-center bg-no-repeat"
                   style={{ backgroundImage: `url(${previewUrl})`, backgroundColor: '#e6dac3' }}
                 />
-                <div className="absolute inset-0 bg-[#1a1210]/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs text-[#fff8f1] font-medium">
-                  Click to replace photo
+                <div
+                  className={`absolute inset-0 transition-opacity flex items-center justify-center text-xs text-[#fff8f1] font-medium ${
+                    isDragOver
+                      ? 'bg-[#f0604f]/40 opacity-100'
+                      : 'bg-[#1a1210]/60 opacity-0 group-hover:opacity-100'
+                  }`}
+                >
+                  {isDragOver ? 'Drop to replace photo' : 'Click or drop to replace photo'}
                 </div>
               </div>
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 text-[#a89289] p-3 text-center">
-                <div className="w-9 h-9 rounded bg-[#241d1a]/25 border border-[#f0604f]/25 flex items-center justify-center text-[#fff8f1] group-hover:text-[#f0604f] transition-colors">
+              <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 text-[#a89289] p-3 text-center pointer-events-none">
+                <div
+                  className={`w-9 h-9 rounded border flex items-center justify-center transition-colors ${
+                    isDragOver
+                      ? 'bg-[#f0604f]/30 border-[#f0604f] text-[#f0604f]'
+                      : 'bg-[#241d1a]/25 border-[#f0604f]/25 text-[#fff8f1] group-hover:text-[#f0604f]'
+                  }`}
+                >
                   <Upload size={16} />
                 </div>
-                <span className="text-xs font-medium text-[#fff8f1]">Drop a photo or click to browse</span>
+                <span className={`text-xs font-medium transition-colors ${isDragOver ? 'text-[#f0604f]' : 'text-[#fff8f1]'}`}>
+                  {isDragOver ? 'Drop image here' : 'Drop a photo or click to browse'}
+                </span>
                 <span className="text-[10px] text-[#a89289]">JPG, PNG or WEBP</span>
               </div>
             )}
